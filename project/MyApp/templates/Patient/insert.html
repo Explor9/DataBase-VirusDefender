@@ -8,18 +8,18 @@
 </head>
 <style type="text/css">
     body{
-        background:url("../../static/img/_500703205.jpg")no-repeat center center fixed;
+        background:url("../../static/img/dayinguahaodan.jpg")no-repeat center center fixed;
             background-size:100%;
     }
     .div1{
         height:460px;
         width: 350px;
         margin-left: 900px;
-        {#margin-right: 20px;#}
+        margin-right: 20px;
         margin-top: 100px;
         margin-bottom:100px ;
         background-color: gainsboro;
-        opacity:0.7;
+        opacity:1;
         filter:alpha(opacity=70);
         padding-top: 10px;
         padding-left: 60px;
@@ -58,7 +58,7 @@
 <body>
 <div class="div1">
     <form>
-                {% csrf_token %}
+        {% csrf_token %}
 <h2>挂号单</h2>
     姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:<input class="input1" name="patient_name"><br><br>
 
@@ -78,7 +78,7 @@
                 <option value="{{dept.id}}">{{dept.dept_name}}</option>
             {% endfor %}
         </select><br><br>
- <input class="input02 " type="submit"  value="打印挂号单"onclick="alert('打印成功！')"formaction="/add_patient/"formmethod="post">
+ <input class="input02 " type="submit"  value="打印挂号单"onclick="alert('打印完成')"formaction="/add_patient/"formmethod="post">
 <input class="input02" type="submit"  value="返回上一级"formaction="/add_patient/"formmethod="get">
 
     </form>
