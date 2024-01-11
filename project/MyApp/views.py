@@ -21,21 +21,21 @@ id3=0
 id4=""
 id5=""
 def new_login(request):#登入
-    if request.method == "GET":#在地址栏输入new_login执行此功能模块
+    if request.method == "GET":#客户端申请
         return render(request, 'User/new_login.html')
-    else:#点击护士登入时执行此模块
+    else:
         user_name = request.POST.get("user_name")
         user_password = request.POST.get("password")
         user_result = User.objects.filter(user_name=user_name)
         user_r=Doctor.objects.filter(doctor_name=user_name)
         context = {}
-        if len(user_result) == 1:#
+        if len(user_result) == 1:#存在用户
             user_password_ = user_result[0].user_passwd
             if user_password == user_password_:
                 user_results = User.objects.all()  # 从user表中获取数据
                 context["user_results"] = user_results
                 if len(user_r) == 0 :#如果在医生表里没有找到相应的记录
-                    return render(request, 'User/choose.html', context=context)#跳转到护士登入界面
+                    return render(request, 'User/choose.html', context=context)#跳转到管理员登入界面
                 else:
                     context["info"] = "身份错误！！！"
                     context["status"] = 3
