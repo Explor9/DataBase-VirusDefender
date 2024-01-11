@@ -74,6 +74,7 @@
         职位：<input type="text"value="{{ doctor_info.doctor_position }}"name="position"></br>
         </div>
      {% csrf_token %}
+     </form>
         <div class="btn">
             <p class="btn1"><input type="submit"value="确认修改"formaction="/back3/"formmethod="post"onclick="alert('修改成功')"  ></p>
             <p class="btn1 "> <input type="submit"value="返回上一级"formaction="/back3/"formmethod="get"></p>
