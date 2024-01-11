@@ -7,15 +7,15 @@
 <link rel="stylesheet"href="../../static/css/bootstrap.min.css">
 <style>
     body{
-        background: url("../../static/img/4.jpg")no-repeat center fixed;
-        background-size: 100%;
+        background: url("../../static/img/bingrenxinxi.jpg")no-repeat center fixed;
+        background-size: 120%;
     }
     #header{
         text-align: center;
         height: 50px;
     }
     h2{
-        font-family: 华文行楷;
+        font-family: 宋体;
         font-size: 40px;
     }
     table
@@ -31,11 +31,11 @@
             color: #666;
             height: 50px;
             border-bottom: 1px solid gray;
-            font-family: 华文行楷;
+            font-family: 宋体;
             font-size: 20px;
         }
         table th{
-            font-family: 华文行楷;
+            font-family: 宋体;
         }
         table thead th
         {
@@ -54,11 +54,11 @@
         height: 30px;
         width: 100px;
         font-size: 15px;
-        margin-left: 1000px;
-        font-family: 华文行楷;
+        margin-left: 700px;
+        font-family: 宋体;
     }
     #tb {
-          margin-left: 550px;
+          margin-left:0px;
           margin-top: 30px;
           font-size: 18px;
       }
@@ -84,7 +84,7 @@
 </div>
  <div id="foot">
      <form>
-         {% csrf_token %}
+        {% csrf_token %}
              <input type="submit" class="btn btn-default" value="继续查询"formmethod="get" formaction="/search_p/"></br></br>
         <input type="submit" class="btn btn-default" value="返回主界面"formmethod="get" formaction="/choose/">
  </form>

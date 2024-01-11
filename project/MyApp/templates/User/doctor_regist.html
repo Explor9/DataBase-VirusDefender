@@ -3,21 +3,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>欢迎来到注册界面</title>
+    <title>注册界面</title>
         <link rel="stylesheet"href="../../static/css/bootstrap.min.css">
     <style>
         .hezi{
             height: 300px;
             width: 400px;
-            margin-top: 6%;
-            margin-left: 35%;
+            margin-top: 200px;
+            margin-left: 560px;
             border-radius: 20px;
-            background-color: lightskyblue;
+            background-color: lightblue;
         }
         body {
             background-color: mediumorchid;
-            background: url("../../static/img/xiandaiyiyuanlansediaoshuyedating_9400303_small.jpg")no-repeat center center fixed;
-            background-size: 100%;
+            background: url("../../static/img/yiyuan.jpg")no-repeat center center fixed;
+            background-size: 120%;
         }
         .kuang1{
             width: 180px;
@@ -59,6 +59,8 @@
             float: right;
             margin-right: 5%;
             margin-top: 6%;
+            background-color: #bababa;
+            color:black;
         }
     </style>
 </head>
@@ -80,7 +82,7 @@
     color: red;">{{ info }}</h3>
     </div>
 {% endif %}
-<p class="biaoyu">为了一切病人，为了病人一切，一切为了病人</p>
+<p class="biaoyu"></p>
 <div class="hezi">
 <form action="/doctor_regist/"method="post">
     {% csrf_token %}
