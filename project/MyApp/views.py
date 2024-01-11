@@ -35,7 +35,7 @@ def new_login(request):#登入
                 user_results = User.objects.all()  # 从user表中获取数据
                 context["user_results"] = user_results
                 if len(user_r) == 0 :#如果在医生表里没有找到相应的记录
-                    return render(request, 'User/choose.html', context=context)#跳转到护士登入界面
+                    return render(request, 'User/choose.html', context=context)#跳转到管理员登入界面
                 else:
                     context["info"] = "身份错误！！！"
                     context["status"] = 3
