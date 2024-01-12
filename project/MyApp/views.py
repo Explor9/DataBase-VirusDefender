@@ -1,109 +1,94 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from MyApp.models import User,Dept,Doctor,Patient,Work,Room,Deal_method,Medicine
-#全局变量
-ss=""
-dict1={}
+
+#Global value
+n=0
 patient_dept1=0
 dept1=""
-id1=""
-length1=0
-diag1=""
+
+length=0
+diag=""
 info={}
-doctor_name1="0"
+doctor_name="0"
 medicine1=""
-num1=0
+num1=0 #最开始显示的时候的药品数量
+dict1={}
 dict2={}
 dict3={}
-n=0
+
+id1=""
 id2=0
 id3=0
 id4=""
 id5=""
-def new_login(request):#登入
-    if request.method == "GET":#客户端申请
-        return render(request, 'User/new_login.html')
-    else:
-        user_name = request.POST.get("user_name")
-        user_password = request.POST.get("password")
-        user_result = User.objects.filter(user_name=user_name)
-        user_r=Doctor.objects.filter(doctor_name=user_name)
-        context = {}
-        if len(user_result) == 1:#存在用户
-            user_password_ = user_result[0].user_passwd
-            if user_password == user_password_:
-                user_results = User.objects.all()  # 从user表中获取数据
-                context["user_results"] = user_results
-                if len(user_r) == 0 :#如果在医生表里没有找到相应的记录
-                    return render(request, 'User/choose.html', context=context)#跳转到管理员登入界面
-                else:
-                    context["info"] = "身份错误！！！"
-                    context["status"] = 3
-                    return render(request, 'User/new_login.html', context=context)
-            else:
-                context["info"] = "密码错误！！！"
-                context["status"] = 1
-                return render(request, 'User/new_login.html', context=context)
-        else:
-            context["info"] = "用户名不存在！！！"
-            context["status"] = 2
-            return render(request, 'User/new_login.html', context=context)
-def doctor_login(request):#医生登入判断
+
+def login(request, user_type):
     if request.method == "GET":
         return render(request, 'User/new_login.html')
     else:
-        user_name = request.POST.get("user_name")
-        user_password = request.POST.get("password")
-        user_result = User.objects.filter(user_name=user_name)
-        user_r = Doctor.objects.filter(doctor_name=user_name)
+        name = request.POST.get("user_name")
+        password = request.POST.get("password")
+        user_model = User if user_type == 'normal' else Doctor
+        user_result = user_model.objects.filter(user_name=name)
         context = {}
+
         if len(user_result) == 1:
-            user_password_ = user_result[0].user_passwd
-            if user_password == user_password_:
-                user_results = User.objects.all()  # 从user表中获取数据
+            real_password = user_result[0].user_passwd
+
+            if password == real_password:
+                user_results = User.objects.all() if user_type == 'normal' else Doctor.objects.all()
                 context["user_results"] = user_results
-                if len(user_r) == 1:
-                    return render(request, 'Doctor/doctor_choose.html', context=context)
+
+                if user_type == 'normal':
+                    return render(request, 'User/choose.html', context=context)
                 else:
-                    context["info"] = "身份错误！！！"
-                    context["status"] = 3
-                    return render(request, 'User/new_login.html', context=context)
+                    return render(request, 'Doctor/doctor_choose.html', context=context)
             else:
-                context["info"] = "密码错误！！！"
+                context["info"] = "密码错误！"
                 context["status"] = 1
-                return render(request, 'User/new_login.html', context=context)
         else:
-            context["info"] = "用户名不存在！！！"
+            context["info"] = "该用户不存在！"
             context["status"] = 2
-            return render(request, 'User/new_login.html', context=context)
-def doctor_regist(request):#医生注册
+
+        return render(request, 'User/new_login.html', context=context)
+
+def new_login(request):
+    return login(request, user_type='normal')
+
+def doctor_login(request):
+    return login(request, user_type='doctor')
+
+def doctor_regist(request):
     if request.method == "GET":
         return render(request, 'User/doctor_regist.html')
     else:
-        user_name = request.POST.get("user_name")
+        name = request.POST.get("user_name")
         pswd = request.POST.get("pswd")
-        user_result_u = User.objects.filter(user_name=user_name)
-        user_result = Doctor.objects.filter(doctor_name=user_name).first()#根据前端输入的姓名在医生表里找到相应的记录
+        user_result_u = User.objects.filter(user_name=name)
+        user_result = Doctor.objects.filter(doctor_name=name).first()
+
         context = {}
+
         if user_result is None:
-            context["info"] = "您不是医生！！！"
+            context["info"] = "您不是医生！"
             context["status"] = 1
-            return render(request, 'User/doctor_regist.html', context=context)
         else:
-            doctor_i=user_result.doctor_id   #通过找到的该条记录获取该医生具体的编号
+            doctor_i = user_result.doctor_id
             doctor_id = request.POST.get("doctor_id")
+
             if len(user_result_u) == 0:
-                if doctor_i==doctor_id:
-                    User.objects.create(user_name=user_name, user_passwd=pswd)
+                if doctor_i == doctor_id:
+                    User.objects.create(user_name=name, user_passwd=pswd)
                     return render(request, 'User/new_login.html', context=context)
                 else:
-                    context["info"] = "您不是医生！！！"
+                    context["info"] = "您不是医生！"
                     context["status"] = 1
-                    return render(request, 'User/doctor_regist.html', context=context)
             else:
-                context["info"] = "用户名存在了！！！"
+                context["info"] = "用户已存在！"
                 context["status"] = 2
-                return render(request, 'User/doctor_regist.html', context=context)
+
+        return render(request, 'User/doctor_regist.html', context=context)
 def choose(request):
     return render(request,'User/choose.html')
 def guahao(request):
@@ -175,10 +160,10 @@ def search_d(request):
     }
     return render(request, 'Doctor/search_doctor_choose.html',context=context)
 def search_by_doctor_name(request):
-    doctor_name = request.POST.get("doctor_name")
-    d = Doctor.objects.filter(doctor_name=doctor_name).first()
-    global doctor_name1,id4
-    doctor_name1 = d.doctor_name
+    name = request.POST.get("doctor_name")
+    d = Doctor.objects.filter(doctor_name=name).first()
+    global doctor_name,id4
+    doctor_name = d.doctor_name
     info_dic = {}
     info_dic["医生编号"] = d.doctor_id
     info_dic["姓名"] = d.doctor_name
@@ -219,8 +204,8 @@ def work2(request):
 def alter(request):
     global id5
     if request.method=="GET":
-        global doctor_name1
-        d = Doctor.objects.filter(doctor_name=doctor_name1).first()
+        global doctor_name
+        d = Doctor.objects.filter(doctor_name=doctor_name).first()
         id5=d.doctor_id
         context = {
             "doctor_info":d
@@ -267,7 +252,7 @@ def search_medicine(request):
     info_dic["药品名称"] = d.medicine_name
     medicine1=d.medicine_name
     info_dic["药品数量"] = d.medicine_num
-    num1=int(d.medicine_num)#最开始显示的时候的药品数量
+    num1=int(d.medicine_num)
     medicine_inform = Medicine.objects.all()
     context = {
         "result_keys": list(info_dic.keys()),
@@ -334,7 +319,7 @@ def display(request):
             "patient_info": patient_info,
             "medicines": medicines,
             "patient_id":id1,
-            "length": length1
+            "length": length
     }
     info["information"]=context["patient_info"]
     info["medicine"]=context["medicines"]
@@ -360,13 +345,13 @@ def display1(request):
 def doctor_choose(request):
     return render(request,'Doctor/doctor_choose.html')
 def patient_manage(request):
-    global length1
+    global length
     if request.method == "GET":
         return render(request,'Doctor/doctor_select.html')
     else:
         patient_all = Patient.objects.all()
-        length=len(patient_all)
-        length1=length
+        len=len(patient_all)
+        length=len
         medicines = Medicine.objects.all()
         context = {
             "patient_all_id": patient_all,
@@ -377,7 +362,7 @@ def patient_manage(request):
         }
         return  render(request,'Doctor/diagnosis.html',context=context)
 def insert_deal_method(request):
-    patient_id=request.POST.get("patient_id")#外键
+    patient_id=request.POST.get("patient_id")
     diagnosis_result=request.POST.get("diagnosis_result")
     room_id=request.POST.get("room_id")
     doctor_suggestions=request.POST.get("doctor_suggestions")
@@ -405,7 +390,7 @@ def insert_deal_method(request):
     d= Patient.objects.filter(id=int(patient_id)).first()
     Deal_method.objects.create(deal_patient_id=d,diagnosis_result=diagnosis_result,
     deal_room_id=room_id,deal_doctor_name=doctor_name,diagnosis_time=diagnosis_time,
-    medicine_detail=medicine_detail,doctor_suggestions=doctor_suggestions)  # 插入注册的用户信息
+    medicine_detail=medicine_detail,doctor_suggestions=doctor_suggestions)  # 插入信息
     p= Patient.objects.filter(id=int(patient_id)).first()
     Room.objects.filter(room_patient_dept=p.patient_dept,room_id=room_id).update(room_patient_id=patient_id,room_patient_name=d.patient_name)  # 更新数据
     return render(request, 'Doctor/diagnosis.html',)
@@ -421,7 +406,7 @@ def out_hospital(request):
         return render(request,'Doctor/out_hospital_regist.html',context=context)
     else:
         depts = Dept.objects.all()
-        out_id=request.POST.get("out_id")#out_id是房号
+        out_id=request.POST.get("out_id") #房号
         Room.objects.filter(room_patient_dept=int(dept1) ,room_id=out_id).update(room_patient_name="空",
             room_patient_id="空")  # 更新数据
         dept_room_infos = Room.objects.filter(room_patient_dept=int(patient_dept1))
@@ -464,11 +449,11 @@ def work_time_search(request):
         dict1=context
         return render(request,'Doctor/doctor_work_time.html',context=context,)
 def distribute_room(request):
-    global diag1,info
+    global diag,info
     if request.method == "GET":
         depts = Dept.objects.all()
         diagnosis_result=request.GET.get("diagnosis_result")
-        diag1=diagnosis_result
+        diag=diagnosis_result
         context = {
             "depts": depts,
         }
@@ -501,7 +486,7 @@ def back2(request):
     else:
         return render(request,'Medicine/add_type.html')
 def back3(request):
-    global id5, doctor_name1,id4
+    global id5, doctor_name,id4
     if request.method=="GET":
         d = Doctor.objects.filter(doctor_name=id4).first()
         info_dic = {}
@@ -523,7 +508,7 @@ def back3(request):
         position = request.POST.get("position")
         telep = request.POST.get("telep")
         Doctor.objects.filter(doctor_id=id5).update(doctor_age=age, doctor_position=position, doctor_telep=telep)
-        d = Doctor.objects.filter(doctor_name=doctor_name1).first()
+        d = Doctor.objects.filter(doctor_name=doctor_name).first()
         context = {
             "doctor_info": d
         }
@@ -560,12 +545,12 @@ def return2(request):
     if request.method == "GET":
         return render(request, 'Doctor/doctor_select.html')
 def return3(request):
-    global id1,length1,diag1,info
+    global id1,length,diag,info
     if request.method == "GET":
         context = {
             "patient_id":id1,
-            "length":length1,
-            "diagnosis_result":diag1,
+            "length":length,
+            "diagnosis_result":diag,
             "patient_info":info["information"],
             "medicines":info["medicine"]
         }
