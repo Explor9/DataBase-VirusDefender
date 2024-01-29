@@ -22,20 +22,20 @@ id4=""
 id5=""
 def new_login(request):#登入
     if request.method == "GET":#客户端申请
-        return render(request, 'User/new_login.html')
-    else:
-        user_name = request.POST.get("user_name")
-        user_password = request.POST.get("password")
-        user_result = User.objects.filter(user_name=user_name)
-        user_r=Doctor.objects.filter(doctor_name=user_name)
+        return render(request, 'User/new_login.html') #渲染登陆界面
+    else: 
+        user_name = request.POST.get("user_name") #获取用户输入的名
+        user_password = request.POST.get("password") #获取用户输入的密码
+        user_result = User.objects.filter(user_name=user_name) #读用户表
+        user_r=Doctor.objects.filter(doctor_name=user_name)#读医生表
         context = {}
-        if len(user_result) == 1:#存在用户
+        if len(user_result) == 1: #判断用户存在
             user_password_ = user_result[0].user_passwd
             if user_password == user_password_:
                 user_results = User.objects.all()  # 从user表中获取数据
                 context["user_results"] = user_results
-                if len(user_r) == 0 :#如果在医生表里没有找到相应的记录
-                    return render(request, 'User/choose.html', context=context)#跳转到管理员登入界面
+                if len(user_r) == 0 : #如果在医生表里没有找到相应的记录
+                    return render(request, 'User/choose.html', context=context) #跳转到管理员登入界面
                 else:
                     context["info"] = "身份错误！！！"
                     context["status"] = 3
@@ -48,7 +48,7 @@ def new_login(request):#登入
             context["info"] = "用户名不存在！！！"
             context["status"] = 2
             return render(request, 'User/new_login.html', context=context)
-def doctor_login(request):#医生登入判断
+def doctor_login(request):#医生登入判断 同上
     if request.method == "GET":
         return render(request, 'User/new_login.html')
     else:
@@ -82,8 +82,8 @@ def doctor_regist(request):#医生注册
     else:
         user_name = request.POST.get("user_name")
         pswd = request.POST.get("pswd")
-        user_result_u = User.objects.filter(user_name=user_name)
-        user_result = Doctor.objects.filter(doctor_name=user_name).first()#根据前端输入的姓名在医生表里找到相应的记录
+        user_result_u = User.objects.filter(user_name=user_name) #根据前端输入的姓名在用户表里找到相应的记录
+        user_result = Doctor.objects.filter(doctor_name=user_name).first() #根据前端输入的姓名在医生表里找到相应的记录
         context = {}
         if user_result is None:
             context["info"] = "您不是医生！！！"
@@ -91,10 +91,10 @@ def doctor_regist(request):#医生注册
             return render(request, 'User/doctor_regist.html', context=context)
         else:
             doctor_i=user_result.doctor_id   #通过找到的该条记录获取该医生具体的编号
-            doctor_id = request.POST.get("doctor_id")
+            doctor_id = request.POST.get("doctor_id") 
             if len(user_result_u) == 0:
                 if doctor_i==doctor_id:
-                    User.objects.create(user_name=user_name, user_passwd=pswd)
+                    User.objects.create(user_name=user_name, user_passwd=pswd) #在用户表中创建用户新建的医生信息
                     return render(request, 'User/new_login.html', context=context)
                 else:
                     context["info"] = "您不是医生！！！"
@@ -107,7 +107,7 @@ def doctor_regist(request):#医生注册
 def choose(request):
     return render(request,'User/choose.html')
 def guahao(request):
-    depts = Dept.objects.all()
+    depts = Dept.objects.all() #获取所有科室信息
     context = {
         "depts":depts
     }
@@ -122,10 +122,10 @@ def add_patient(request):
         patient_telep = request.POST.get("patient_telep")
         patient_idcard = request.POST.get("patient_idcard")
         patient_dept = request.POST.get("patient_dept")
-        d = Dept.objects.filter(id=int(patient_dept)).first()
+        d = Dept.objects.filter(id=int(patient_dept)).first() #根据病人所属科室 获取科室信息
         Patient.objects.create(patient_name=patient_name, patient_sex=patient_sex,patient_idcard=patient_idcard,
-                                patient_age=patient_age, patient_telep=patient_telep, patient_dept=d)  # 插入注册的用户信息
-        patient_result = Patient.objects.filter(patient_idcard=patient_idcard).first()
+                                patient_age=patient_age, patient_telep=patient_telep, patient_dept=d)  # 在该科室中插入注册的用户信息
+        patient_result = Patient.objects.filter(patient_idcard=patient_idcard).first() #获取病人表的插入结果 返还给前端
         context = {
         "id":patient_result.id,
         "name": patient_result.patient_name,
@@ -143,7 +143,7 @@ def search_p(request):
     return render(request, 'Patient/search_patient_choose.html',context=context)
 def search_by_patient_name(request):
         patient_name = request.POST.get("patient_name")
-        d = Patient.objects.filter(patient_name=patient_name).first()
+        d = Patient.objects.filter(patient_name=patient_name).first() #根据病人名字在病人表中搜索
         info_dic = {}
         info_dic["门诊号"] = d.id
         global id2
@@ -163,7 +163,7 @@ def search_by_patient_dept(request):
         return render(request, 'User/choose.html')
     else:
         patient_dept = request.POST.get("patient_dept")
-        patient_infos = Patient.objects.filter(patient_dept=int(patient_dept)).all()
+        patient_infos = Patient.objects.filter(patient_dept=int(patient_dept)).all() #根据病人科室获取该科室病人信息
         context = {
             "patient_infos":patient_infos
         }
@@ -176,7 +176,7 @@ def search_d(request):
     return render(request, 'Doctor/search_doctor_choose.html',context=context)
 def search_by_doctor_name(request):
     doctor_name = request.POST.get("doctor_name")
-    d = Doctor.objects.filter(doctor_name=doctor_name).first()
+    d = Doctor.objects.filter(doctor_name=doctor_name).first() #根据医生姓名查询医生表
     global doctor_name1,id4
     doctor_name1 = d.doctor_name
     info_dic = {}
@@ -197,21 +197,21 @@ def search_by_doctor_dept(request):
     doctor_dept = request.POST.get("doctor_dept")
     global id3
     id3=doctor_dept
-    doctor_infos = Doctor.objects.filter(doctor_dept=int(doctor_dept)).all()
+    doctor_infos = Doctor.objects.filter(doctor_dept=int(doctor_dept)).all() #根据医生科室获取医生表中医生信息
     context = {
         "doctor_infos": doctor_infos
     }
     return render(request, 'Doctor/search_by_doctor_dept.html', context=context)
 def work1(request):
     global id3
-    work_time_results = Work.objects.filter(work_doctor_dept=int(id3))
+    work_time_results = Work.objects.filter(work_doctor_dept=int(id3)) #根据用户输入的查询医生科室id 并获取work表中信息
     context = {
         "work_time_results": work_time_results,
     }
     return render(request,'Doctor/users_work.html',context=context)
 def work2(request):
     global id4
-    work_time_results = Work.objects.filter(work_doctor_name=id4)
+    work_time_results = Work.objects.filter(work_doctor_name=id4) #同上
     context = {
         "work_time_results": work_time_results,
     }
@@ -220,7 +220,7 @@ def alter(request):
     global id5
     if request.method=="GET":
         global doctor_name1
-        d = Doctor.objects.filter(doctor_name=doctor_name1).first()
+        d = Doctor.objects.filter(doctor_name=doctor_name1).first() #根据输入的医生名字获取医生表中医生信息
         id5=d.doctor_id
         context = {
             "doctor_info":d
@@ -229,7 +229,7 @@ def alter(request):
 def alter_work_time(request):
     alter_value=request.GET.get("alter_value")
     alter_value_to=request.GET.get("alter_value_to")
-    Work.objects.filter(work_doctor_name=id4,work_time=alter_value).update(work_time=alter_value_to)
+    Work.objects.filter(work_doctor_name=id4,work_time=alter_value).update(work_time=alter_value_to) #调整医生排班时间
     work_time_results = Work.objects.filter(work_doctor_name=id4)
     context = {
         "work_time_results": work_time_results,
@@ -238,8 +238,8 @@ def alter_work_time(request):
 def diagnosis_detail(request):
     global id2
     if request.method=="GET":
-        d = Patient.objects.filter(id=id2).first()
-        c = Deal_method.objects.filter(deal_patient_id=id2).first()
+        d = Patient.objects.filter(id=id2).first() #获取输入id 病人的信息
+        c = Deal_method.objects.filter(deal_patient_id=id2).first() 
         if c is None:
             return HttpResponse("该病人暂未就诊，无就诊详情！")
         else:
